@@ -81,10 +81,10 @@ public class Enemy {
 
         //animation part------------------------------------------------------------------------------------------------------------------------------------------
         //swim animation
+        Matrix matrix = new Matrix();
+        matrix.preScale(-1.0f, 1.0f); //para darle vuelta a la imagen
+        this.iddle_animation = new Bitmap[animation_total_frames];
         if (level == 1) {
-            this.iddle_animation = new Bitmap[animation_total_frames];
-            Matrix matrix = new Matrix();
-            matrix.preScale(-1.0f, 1.0f); //para darle vuelta a la imagen
             for (int frame = 0; frame < this.animation_total_frames; frame++) {
                 this.iddle_animation[frame] = this.createSubImageAt(red_enemy_swim[frame][0] * 3.5,
                         red_enemy_swim[frame][1] * 3.5,
@@ -98,15 +98,12 @@ public class Enemy {
                         matrix,
                         true);
                 this.iddle_animation[frame] = Bitmap.createScaledBitmap(this.iddle_animation[frame],
-                        this.iddle_animation[frame].getWidth() * 2,
-                        this.iddle_animation[frame].getHeight() * 2,
+                        (int)(this.iddle_animation[frame].getWidth() * 1.7),
+                        (int)(this.iddle_animation[frame].getHeight() * 1.7),
                         true);
             }
         }
-        if (level == 2 || level == 3) {
-            this.iddle_animation = new Bitmap[animation_total_frames];
-            Matrix matrix = new Matrix();
-            matrix.preScale(-1.0f, 1.0f); //para darle vuelta a la imagen
+        if (level == 2 ) {
             for (int frame = 0; frame < this.animation_total_frames; frame++) {
                 this.iddle_animation[frame] = this.createSubImageAt(green_enemy_swim[frame][0] * 3.5,
                         green_enemy_swim[frame][1] * 3.5,
@@ -120,8 +117,27 @@ public class Enemy {
                         matrix,
                         true);
                 this.iddle_animation[frame] = Bitmap.createScaledBitmap(this.iddle_animation[frame],
-                        this.iddle_animation[frame].getWidth() * 3,
-                        this.iddle_animation[frame].getHeight() * 3,
+                        (int)(this.iddle_animation[frame].getWidth() * 2.5),
+                        (int)(this.iddle_animation[frame].getHeight() * 2.5),
+                        true);
+            }
+        }
+        if (level == 3) {
+            for (int frame = 0; frame < this.animation_total_frames; frame++) {
+                this.iddle_animation[frame] = this.createSubImageAt(red_enemy_swim[frame][0] * 3.5,
+                        red_enemy_swim[frame][1] * 3.5,
+                        red_enemy_swim[frame][2] * 3.5,
+                        red_enemy_swim[frame][3] * 3.5,
+                        false);
+                this.iddle_animation[frame] = Bitmap.createBitmap(this.iddle_animation[frame],
+                        0, 0,
+                        this.iddle_animation[frame].getWidth(),
+                        this.iddle_animation[frame].getHeight(),
+                        matrix,
+                        true);
+                this.iddle_animation[frame] = Bitmap.createScaledBitmap(this.iddle_animation[frame],
+                        (int)(this.iddle_animation[frame].getWidth() * 3.2),
+                        (int)(this.iddle_animation[frame].getHeight() * 3.2),
                         true);
             }
         }

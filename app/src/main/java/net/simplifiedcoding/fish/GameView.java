@@ -145,12 +145,14 @@ public class GameView extends SurfaceView implements Runnable {
                 (int) (this.you_win_title.getHeight() * 0.25),
                 true);
 
+        youWon = false;
+
     }
 
     @Override
     public void run() {
         while (playing) {
-            if(!youWon) update();
+            update();
             draw();
             control();
         }
@@ -263,6 +265,9 @@ public class GameView extends SurfaceView implements Runnable {
             e.putInt("score"+j,highScore[i]);
         }
         e.apply();
+        if(youWon){
+            areYouWinningSon.start();
+        }
     }
 
     private void draw() {
@@ -319,7 +324,6 @@ public class GameView extends SurfaceView implements Runnable {
                 int yPos=(int) ((canvas.getHeight() / 2) - ((paint.descent() + paint.ascent()) / 2));
                 //canvas.drawText("Game Over",canvas.getWidth()/2,yPos,paint);
                 if (youWon){
-                    areYouWinningSon.start();
                     canvas.drawBitmap(you_win_title,(canvas.getWidth()/2)-you_win_title.getWidth()/2,yPos-you_win_title.getHeight()/2,paint);
                 }
                 else canvas.drawBitmap(gameover_title,(canvas.getWidth()/2)-gameover_title.getWidth()/2,yPos-gameover_title.getHeight()/2,paint);
@@ -378,6 +382,7 @@ public class GameView extends SurfaceView implements Runnable {
             if(motionEvent.getAction()==MotionEvent.ACTION_UP){
                 retrycounter++;
                 if(retrycounter>1) {
+                    areYouWinningSon.stop();
                     context.startActivity(new Intent(context, MainActivity.class));
                 }
 
