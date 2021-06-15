@@ -45,7 +45,7 @@ public class Enemy {
     public static final int DEATH_ANIMATION = 1;
     private Bitmap[] iddle_animation;
     private Bitmap[] death_animation;
-
+    double adapter = 3;
 
     public static int getRandomNumber(int min, int max) {
         return (int) ((Math.random() * (max - min)) + min);
@@ -65,6 +65,8 @@ public class Enemy {
         Random generator = new Random();
         speed = getRandomNumber(speedsByLevel[level] - 2, speedsByLevel[level] + 2);
 
+
+        adapter = context.getResources().getDisplayMetrics().density;
         if(level==1){
             bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.enemy1and2);
         } else if(level == 2) {
@@ -86,10 +88,10 @@ public class Enemy {
         this.iddle_animation = new Bitmap[animation_total_frames];
         if (level == 1) {
             for (int frame = 0; frame < this.animation_total_frames; frame++) {
-                this.iddle_animation[frame] = this.createSubImageAt(red_enemy_swim[frame][0] * 3.5,
-                        red_enemy_swim[frame][1] * 3.5,
-                        red_enemy_swim[frame][2] * 3.5,
-                        red_enemy_swim[frame][3] * 3.5,
+                this.iddle_animation[frame] = this.createSubImageAt(red_enemy_swim[frame][0] * adapter,
+                        red_enemy_swim[frame][1] * adapter,
+                        red_enemy_swim[frame][2] * adapter,
+                        red_enemy_swim[frame][3] * adapter,
                         false);
                 this.iddle_animation[frame] = Bitmap.createBitmap(this.iddle_animation[frame],
                         0, 0,
@@ -105,10 +107,10 @@ public class Enemy {
         }
         if (level == 2 ) {
             for (int frame = 0; frame < this.animation_total_frames; frame++) {
-                this.iddle_animation[frame] = this.createSubImageAt(green_enemy_swim[frame][0] * 3.5,
-                        green_enemy_swim[frame][1] * 3.5,
-                        green_enemy_swim[frame][2] * 3.5,
-                        green_enemy_swim[frame][3] * 3.5,
+                this.iddle_animation[frame] = this.createSubImageAt(green_enemy_swim[frame][0] * adapter,
+                        green_enemy_swim[frame][1] * adapter,
+                        green_enemy_swim[frame][2] * adapter,
+                        green_enemy_swim[frame][3] * adapter,
                         false);
                 this.iddle_animation[frame] = Bitmap.createBitmap(this.iddle_animation[frame],
                         0, 0,
@@ -124,10 +126,10 @@ public class Enemy {
         }
         if (level == 3) {
             for (int frame = 0; frame < this.animation_total_frames; frame++) {
-                this.iddle_animation[frame] = this.createSubImageAt(red_enemy_swim[frame][0] * 3.5,
-                        red_enemy_swim[frame][1] * 3.5,
-                        red_enemy_swim[frame][2] * 3.5,
-                        red_enemy_swim[frame][3] * 3.5,
+                this.iddle_animation[frame] = this.createSubImageAt(red_enemy_swim[frame][0] * adapter,
+                        red_enemy_swim[frame][1] * adapter,
+                        red_enemy_swim[frame][2] * adapter,
+                        red_enemy_swim[frame][3] * adapter,
                         false);
                 this.iddle_animation[frame] = Bitmap.createBitmap(this.iddle_animation[frame],
                         0, 0,
