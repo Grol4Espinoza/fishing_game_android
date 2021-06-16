@@ -10,9 +10,14 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.media.MediaPlayer;
+import android.util.Log;
+import android.view.InputDevice;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+
+import net.simplifiedcoding.fish.Character_Zero.Character_Zero;
 
 import java.util.Random;
 
@@ -21,7 +26,8 @@ public class GameView extends SurfaceView implements Runnable {
     public static final int MAX_LEVEL = 3;
     volatile boolean playing;
     private Thread gameThread = null;
-    private Player player;
+    //private Player player;
+    private Character_Zero player;
     public Bitmap background;
     public Bitmap[] backgroundsLevel;
     public Bitmap gameover_title;
@@ -75,10 +81,14 @@ public class GameView extends SurfaceView implements Runnable {
 
     public GameView(Context context, int _screenX, int _screenY) {
         super(context);
+
+        this.setFocusable(true);
+
         level = 1;
         screenX = _screenX;
         screenY = _screenY;
-        player = new Player(context, screenX, screenY);
+        //player = new Player(context, screenX, screenY);
+        player = new Character_Zero(context,screenX,screenY,75,90);
 
         surfaceHolder = getHolder();
         paint = new Paint();
@@ -145,12 +155,17 @@ public class GameView extends SurfaceView implements Runnable {
                 (int) (this.you_win_title.getHeight() * 0.25),
                 true);
 
+        youWon = false;
+
+        Log.i("msj","TAMAÑO x: "+_screenX+" y: "+_screenY);
+
+
     }
 
     @Override
     public void run() {
         while (playing) {
-            if(!youWon) update();
+            update();
             draw();
             control();
         }
@@ -191,13 +206,15 @@ public class GameView extends SurfaceView implements Runnable {
                 //add hp if player eat enemy
                 if(player.getHp() > enemies[i].getHp()){
                     player.addHp(enemies[i].getHp());
+                    player.attack();
                 } else {
                     player.addHp(-enemies[i].getHp()/4);
                 }
 
                 //check hp player
                 if(player.getHp() <= 0){
-                    player.setAnimation_type(player.DEATH_ANIMATION);
+                    //player.setAnimation_type(player.DEATH_ANIMATION);
+                    player.die();
                     gameOver();
                 } else if (player.getHp() >= 500){
                     // Set next level
@@ -263,6 +280,9 @@ public class GameView extends SurfaceView implements Runnable {
             e.putInt("score"+j,highScore[i]);
         }
         e.apply();
+        if(youWon){
+            areYouWinningSon.start();
+        }
     }
 
     private void draw() {
@@ -275,11 +295,17 @@ public class GameView extends SurfaceView implements Runnable {
 
             canvas.drawBitmap(background, 0, 0, paint);
 
-            canvas.drawBitmap(
+            /*canvas.drawBitmap(
                     player.getBitmap(),
                     player.getX(),
                     player.getY(),
                     paint);
+            */
+            player.draw(canvas, paint);
+
+
+
+            //player.draw(canvas,paint);
 
             canvas.drawText(player.getHp()+"", player.getX()+player.getWidth()/2,player.getY(), paint);
 
@@ -319,7 +345,6 @@ public class GameView extends SurfaceView implements Runnable {
                 int yPos=(int) ((canvas.getHeight() / 2) - ((paint.descent() + paint.ascent()) / 2));
                 //canvas.drawText("Game Over",canvas.getWidth()/2,yPos,paint);
                 if (youWon){
-                    areYouWinningSon.start();
                     canvas.drawBitmap(you_win_title,(canvas.getWidth()/2)-you_win_title.getWidth()/2,yPos-you_win_title.getHeight()/2,paint);
                 }
                 else canvas.drawBitmap(gameover_title,(canvas.getWidth()/2)-gameover_title.getWidth()/2,yPos-gameover_title.getHeight()/2,paint);
@@ -365,10 +390,14 @@ public class GameView extends SurfaceView implements Runnable {
         if(!isGameOver) {
             switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
                 case MotionEvent.ACTION_UP:
-                    player.stopBoosting();
+                    //player.stopBoosting();
                     break;
                 case MotionEvent.ACTION_DOWN:
-                    player.setBoosting();
+                    //player.setBoosting();
+
+                    Log.i("player antes de saltar","player speedx = "+ this.player.getSpeed()[0]+ " speedy = "+ this.player.getSpeed()[1]);
+                    player.jump();
+                    Log.i("player despues","player speedx = "+ this.player.getSpeed()[0]+ " speedy = "+ this.player.getSpeed()[1]);
                     break;
 
             }
@@ -378,19 +407,95 @@ public class GameView extends SurfaceView implements Runnable {
             if(motionEvent.getAction()==MotionEvent.ACTION_UP){
                 retrycounter++;
                 if(retrycounter>1) {
+                    areYouWinningSon.stop();
                     context.startActivity(new Intent(context, MainActivity.class));
                 }
 
             }
 
         }
+        Log.i("msj","hiciste click en x: "+motionEvent.getX()+" y: "+motionEvent.getY());
 
         return true;
 
     }
 
+    /*@Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        boolean handled = false;
+        if ((event.getSource() & InputDevice.SOURCE_GAMEPAD)
+                == InputDevice.SOURCE_GAMEPAD) {
+            if (event.getRepeatCount() == 0) {
+                switch (keyCode) {
+                    // Handle gamepad and D-pad button presses to
+                    // navigate the ship
+                    case KeyEvent.KEYCODE_BUTTON_A:
+                        //this.player.jump();
+                        return true;
+                    case KeyEvent.KEYCODE_BUTTON_B:
+                        //this.player.dash();
+                        return true;
+                    case KeyEvent.KEYCODE_DPAD_LEFT:
+                        //this.player.move(false);
+                        return true;
+                    case KeyEvent.KEYCODE_DPAD_RIGHT:
+                        //this.player.move(true);
+                        return true;
+                    case KeyEvent.KEYCODE_BUTTON_X:
+                        //this.player.attack();
+                        return true;
 
+                    default:
+                        return super.onKeyDown(keyCode, event);
+                }
+            }
+            if (handled) {
+                return true;
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+    }*/
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        boolean handled = false;
+        //if (key_counter == 0) {
+            Log.i("msj action","onKeyDown ACTION = "+ event.getAction());
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                switch (keyCode) {
+                    // Handle gamepad and D-pad button presses to
+                    // navigate the ship
+                    case KeyEvent.KEYCODE_DPAD_UP:
+                        //this.zero_character.setMovingVector(-1500,0);
+                        //key_counter++;
+                        return true;
+                    case KeyEvent.KEYCODE_DPAD_DOWN:
+                        //this.zero_character.setMovingVector(1500,0);
+                        //key_counter++;
+                        return true;
+                    case KeyEvent.KEYCODE_DPAD_RIGHT:
+                        //this.zero_character.setMovingVector(0,-1500);
+                        //key_counter++;
+                        return true;
+                    case KeyEvent.KEYCODE_DPAD_LEFT:
+                        //this.zero_character.setMovingVector(0,1500);
+                        //key_counter++;
+                        return true;
+                    case KeyEvent.KEYCODE_X:
+                        //this.zero_character.setMovingVector(0,1500);
+                        //key_counter++;
+                        this.player.attack();
+                        return true;
 
+                    default:
+                        return super.onKeyDown(keyCode, event);
+                }
+            }
+            if (handled) {
+                return true;
+            }
+        //}
+        return false;
+    }
 
 }
 

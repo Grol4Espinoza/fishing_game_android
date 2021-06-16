@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.Rect;
+import android.util.Log;
 
 import static net.simplifiedcoding.fish.flying_fish_constants.death_animation_coordinates;
 import static net.simplifiedcoding.fish.flying_fish_constants.iddle_animation_coordinates;
@@ -36,12 +37,15 @@ public class Player {
     public static final int DEATH_ANIMATION = 1;
     private Bitmap[] iddle_animation;
     private Bitmap[] death_animation;
+    double adapter = 0;
 
     public Player(Context context, int screenX, int screenY) {
         x = 75;
         y = 50;
         speed = 1;
+        adapter = context.getResources().getDisplayMetrics().density;
         bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.player_fish);
+        Log.i("msj","TAMAÑO del bitmap_player  x: "+bitmap.getWidth()+" y: "+bitmap.getHeight()+" densidad: "+ adapter);
         //maxY = screenY - bitmap.getHeight(); antes de la animacion
         maxY = screenY - real_height;
         minY = 0;
@@ -57,10 +61,10 @@ public class Player {
         Matrix matrix = new Matrix();
         matrix.preScale(-1.0f, 1.0f); //para darle vuelta a la imagen
         for(int frame = 0; frame< this.animation_total_frames; frame++ ) {
-            this.iddle_animation[frame] = this.createSubImageAt(iddle_animation_coordinates[frame][0]*3.5,
-                    iddle_animation_coordinates[frame][1]*3.5,
-                    iddle_animation_coordinates[frame][2]*3.5,
-                    iddle_animation_coordinates[frame][3]*3.5,
+            this.iddle_animation[frame] = this.createSubImageAt(iddle_animation_coordinates[frame][0]*adapter,
+                    iddle_animation_coordinates[frame][1]*adapter,
+                    iddle_animation_coordinates[frame][2]*adapter,
+                    iddle_animation_coordinates[frame][3]*adapter,
                     false);
             this.iddle_animation[frame] = Bitmap.createBitmap(this.iddle_animation[frame],
                     0, 0,
@@ -77,10 +81,10 @@ public class Player {
         //death animation
         this.death_animation = new Bitmap[animation_total_frames];
         for(int frame = 0; frame< this.animation_total_frames; frame++ ) {
-            this.death_animation[frame] = this.createSubImageAt(death_animation_coordinates[frame][0]*3.5,
-                    death_animation_coordinates[frame][1]*3.5,
-                    death_animation_coordinates[frame][2]*3.5,
-                    death_animation_coordinates[frame][3]*3.5,
+            this.death_animation[frame] = this.createSubImageAt(death_animation_coordinates[frame][0]*adapter,
+                    death_animation_coordinates[frame][1]*adapter,
+                    death_animation_coordinates[frame][2]*adapter,
+                    death_animation_coordinates[frame][3]*adapter,
                     false);
             this.death_animation[frame] = Bitmap.createBitmap(this.death_animation[frame],
                     0, 0,
