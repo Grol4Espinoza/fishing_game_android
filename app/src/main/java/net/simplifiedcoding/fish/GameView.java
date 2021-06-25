@@ -459,33 +459,39 @@ public class GameView extends SurfaceView implements Runnable {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         boolean handled = false;
         //if (key_counter == 0) {
-            Log.i("msj action","onKeyDown ACTION = "+ event.getAction());
+            //Log.i("msj action","onKeyDown ACTION = "+ event.getAction());
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 switch (keyCode) {
                     // Handle gamepad and D-pad button presses to
                     // navigate the ship
                     case KeyEvent.KEYCODE_DPAD_UP:
-                        //this.zero_character.setMovingVector(-1500,0);
-                        //key_counter++;
+                    case KeyEvent.KEYCODE_A:
+                        this.player.move(false);
+                        this.player.movement_status = true;
+                        this.player.new_movementCounter++;
                         return true;
                     case KeyEvent.KEYCODE_DPAD_DOWN:
-                        //this.zero_character.setMovingVector(1500,0);
-                        //key_counter++;
+                    case KeyEvent.KEYCODE_D:
+                        this.player.move(true);
+                        this.player.movement_status = true;
+                        this.player.new_movementCounter++;
                         return true;
                     case KeyEvent.KEYCODE_DPAD_RIGHT:
-                        //this.zero_character.setMovingVector(0,-1500);
-                        //key_counter++;
+                    case KeyEvent.KEYCODE_W:
+                        this.player.jump();
                         return true;
                     case KeyEvent.KEYCODE_DPAD_LEFT:
+                    case KeyEvent.KEYCODE_S:
                         //this.zero_character.setMovingVector(0,1500);
                         //key_counter++;
                         return true;
-                    case KeyEvent.KEYCODE_X:
+                    case KeyEvent.KEYCODE_J:
                         //this.zero_character.setMovingVector(0,1500);
                         //key_counter++;
                         this.player.attack();
                         return true;
-
+                    case KeyEvent.KEYCODE_SPACE:
+                        this.player.jump();
                     default:
                         return super.onKeyDown(keyCode, event);
                 }

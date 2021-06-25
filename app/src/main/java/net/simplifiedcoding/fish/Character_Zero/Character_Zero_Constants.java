@@ -13,7 +13,7 @@ import net.simplifiedcoding.fish.R;
 public final class Character_Zero_Constants {
 
     public int animation_frame = 0;
-    private double adapter;
+    public double adapter;
 
 
     Character_Zero_Constants(Context context) {
@@ -30,8 +30,8 @@ public final class Character_Zero_Constants {
         //rellenamos cada bitmap[] con sus imagenes
 
         //animaciones hacia la izq
-        iddle_animation_izq = generateAnimation(iddle,matrix);
-        iddle_low_hp_animation_izq = generateAnimation(iddle_low_hp,matrix);
+        idle_animation_izq = generateAnimation(idle,matrix);
+        idle_low_hp_animation_izq = generateAnimation(idle_low_hp,matrix);
         walk_start_animation_izq = generateAnimation(walk_start,matrix);
         walk_loop_animation_izq = generateAnimation(walk_loop,matrix);
         walk_loop_transition_to_idle_animation_izq = generateAnimation(walk_loop_transition_to_idle,matrix);
@@ -52,8 +52,8 @@ public final class Character_Zero_Constants {
         zero_air_attack_animation_izq = generateAnimation(zero_air_attack,matrix);
 
         //animaciones hacia la der
-        iddle_animation_der = generateAnimation(iddle,null);
-        iddle_low_hp_animation_der = generateAnimation(iddle_low_hp,null);
+        idle_animation_der = generateAnimation(idle,null);
+        idle_low_hp_animation_der = generateAnimation(idle_low_hp,null);
         walk_start_animation_der = generateAnimation(walk_start,null);
         walk_loop_animation_der = generateAnimation(walk_loop,null);
         walk_loop_transition_to_idle_animation_der = generateAnimation(walk_loop_transition_to_idle,null);
@@ -73,8 +73,16 @@ public final class Character_Zero_Constants {
         zero_buster_animation_der = generateAnimation(zero_buster,null);
         zero_air_attack_animation_der = generateAnimation(zero_air_attack,null);
 
+
+        //scale attack coord * adapter
+        /*scalarProductMat(adapter,slash_A_zero);
+        scalarProductMat(adapter,slash_B_zero);
+        scalarProductMat(adapter,slash_C_zero);*/
+
         //Log.i("msj Zero_Constants","CARGADAS LAS CONSTANTES");
-        //Log.i("msj Zero_Constants","iddle_animation_der len = "+ this.iddle_animation_der.length);
+        //Log.i("msj Zero_Constants","idle_animation_der len = "+ this.idle_animation_der.length);
+
+
 
     }
 
@@ -98,13 +106,13 @@ public final class Character_Zero_Constants {
 
 
     //coordinates
-    public static final double[][] iddle = {{10,102,43,47},
+    public static final double[][] idle = {{10,102,43,47},
             {67,102,43,47},
             {125,101,42,48},
             {182,102,42,47},
             {238,102,43,47},
             {295,102,43,47}};
-    public static final double[][] iddle_low_hp = {{353,102,42,47},
+    public static final double[][] idle_low_hp = {{353,102,42,47},
             {412,101,40,48},
             {467,102,42,47},
             {524,103,42,46},
@@ -141,6 +149,20 @@ public final class Character_Zero_Constants {
             {783,254,48,45},
             {848,254,45,45},
             {907,253,49,45}};
+    public static double[][] slash_A_zero = {{0,0,39,46},
+            {0,0,39,48},
+            {0,16,49,47},
+            {0,17,51,46},
+            {0,12,50,48},
+            {0,0,54,48},
+            {0,0,47,49},
+            {0,0,46,45},
+            {0,0,46,45},
+            {0,0,45,45},
+            {0,0,45,45},
+            {0,0,45,45},
+            {0,0,49,45}};
+
     public static final double[][] slash_B = {{6,389,52,44},
             {62,388,66,45},
             {145,388,83,45},
@@ -153,6 +175,19 @@ public final class Character_Zero_Constants {
             {749,387,53,46},
             {813,387,46,46},
             {865,387,43,46}};
+    public static double[][] slash_B_zero = {{0,0,52,44},
+            {0,0,51,45},
+            {0,0,39,45},
+            {9,0,48,45},
+            {23,0,43,46},
+            {24,0,43,46},
+            {23,0,50,46},
+            {19,0,44,46},
+            {12,0,43,46},
+            {10,0,43,46},
+            {3,0,43,46},
+            {0,0,43,46}};
+
     public static final double[][] slash_C = {{8,516,46,50},
             {72,517,47,50},
             {126,508,54,59},
@@ -168,6 +203,22 @@ public final class Character_Zero_Constants {
             {1030,528,51,39},
             {1095,528,51,39},
             {1155,523,41,44}};
+    public static double[][] slash_C_zero = {{4,4,42,46},
+            {8,0,39,50},
+            {9,12,45,47},
+            {0,18,55,46},
+            {0,6,52,57},
+            {0,0,51,58},
+            {0,0,51,62},
+            {0,0,51,59},
+            {0,0,51,47},
+            {0,0,51,39},
+            {0,0,51,39},
+            {0,0,51,39},
+            {0,0,51,39},
+            {0,0,51,39},
+            {0,0,41,44}};
+
     public static final double[][] slash_End = {{963,253,47,46},
             {1023,253,44,46},
             {1083,253,41,46},
@@ -236,8 +287,8 @@ public final class Character_Zero_Constants {
 
     //animation
     //izq
-    public final Bitmap[] iddle_animation_izq;
-    public final Bitmap[] iddle_low_hp_animation_izq;
+    public final Bitmap[] idle_animation_izq;
+    public final Bitmap[] idle_low_hp_animation_izq;
     public final Bitmap[] walk_start_animation_izq;
     public final Bitmap[] walk_loop_animation_izq;
     public final Bitmap[] walk_loop_transition_to_idle_animation_izq;
@@ -258,8 +309,8 @@ public final class Character_Zero_Constants {
     public final Bitmap[] zero_air_attack_animation_izq;
 
     //der
-    public final Bitmap[] iddle_animation_der;
-    public final Bitmap[] iddle_low_hp_animation_der;
+    public final Bitmap[] idle_animation_der;
+    public final Bitmap[] idle_low_hp_animation_der;
     public final Bitmap[] walk_start_animation_der;
     public final Bitmap[] walk_loop_animation_der;
     public final Bitmap[] walk_loop_transition_to_idle_animation_der;
@@ -315,4 +366,40 @@ public final class Character_Zero_Constants {
         return animation;
     }
 
+    public String printState(int _state){
+        switch(_state){
+            case 0:
+                return "quieto_en_el_suelo";
+            case 1:
+                return "en_el_aire";
+            case 2:
+                return "moviendote_a_la_izquierda";
+            case 3:
+                return "moviendote_a_la_derecha";
+            case 4:
+                return "low_hp";
+            case 5:
+                return "durante_un_dash";
+            case 6:
+                return "durante_ataque_1";
+            case 7:
+                return "durante_ataque_2";
+            case 8:
+                return "durante_ataque_3";
+            case 9:
+                return "disparando";
+            case 10:
+                return "getting_hurt";
+            default:
+                return "no_state";
+        }
+    }
+
+    public void scalarProductMat (double scalar, double[][] array){
+        for (int i=0;i<array.length;i++){
+            for (int j=0;j<array[i].length;j++){
+                array[i][j] = scalar * array[i][j];
+            }
+        }
+    }
 }
