@@ -45,6 +45,7 @@ public class Character_Zero {
     private int animation_status; // 0 == animation_start, 1 == animation_loop, 2 == animation_end
     private int zero_x = 0;
     private int zero_y = 0;
+    private String zeroPositions;
 
     public Character_Zero(Context context, int screenX, int screenY, int x, int y){
 
@@ -59,8 +60,8 @@ public class Character_Zero {
         this.resetHp();
         this.speed = new int[]{0,0};
 
-        this.width = zero_constants.idle_animation_izq[0].getWidth();
-        this.height = zero_constants.idle_animation_izq[0].getHeight();
+        this.width = zero_constants.idle_animation_der[0].getWidth();
+        this.height = zero_constants.idle_animation_der[0].getHeight();
 
         this.maxX = this.screenX - this.width;
         this.minX = 0;
@@ -71,12 +72,12 @@ public class Character_Zero {
         this.idle();
 
         //initializing rect object
-        this.detectCollision =  new Rect(x, y, this.width, this.height);
+        this.detectCollision =  new Rect(this.x, this.y, this.width, this.height);
 
         //initializing current animation
-        this.current_animation = this.zero_constants.idle_animation_izq; //provisional
+        this.current_animation = this.zero_constants.jump_descending_loop_der; //provisional
         this.direccion = true;
-        this.animation_duration = 100;
+        this.animation_duration = 30;
         this.animation_status = 0;
 
         this.old_movementCounter = 0;
@@ -87,85 +88,69 @@ public class Character_Zero {
 
     public void update(){
 
-        this.maxX = this.screenX - this.width;
-        this.maxY = this.screenY - this.height-500;
+        this.updateState();
+        this.updateFrame();
+        this.updatePosition();
+        this.updateAnimation();
 
-        /*if(this.state == Character_Zero_Constants.durante_ataque_1){
-            this.maxY = (int) (this.screenY - this.height - Character_Zero_Constants.slash_A_zero[animation_frame_index][1] * this.zero_constants.adapter);
-        }else if(this.state == Character_Zero_Constants.durante_ataque_2){
-            this.maxY = (int) (this.screenY - this.height - Character_Zero_Constants.slash_B_zero[animation_frame_index][1] * this.zero_constants.adapter);
-        }else if(this.state == Character_Zero_Constants.durante_ataque_3){
-            this.maxY = (int) (this.screenY - this.height - Character_Zero_Constants.slash_C_zero[animation_frame_index][1] * this.zero_constants.adapter);
-        }else {
-            this.maxY = this.screenY - this.height;
-        }*/
+    }
 
+    private void updateState(){
 
-        this.x += this.speed[0];
-
-        if(this.state == Character_Zero_Constants.durante_ataque_1||this.state == Character_Zero_Constants.durante_ataque_2||this.state == Character_Zero_Constants.durante_ataque_3) {
+        //verifica si estoy cayendo
+        if (this.y >= this.maxY) {
             this.y = this.maxY;
-        }
-
-        this.speed[1] += this.gravity;
-        this.y += this.speed[1];
-
-
-        if (this.y < this.minY) {
-            this.y = this.minY;
-        }
-        if (this.y > this.maxY) {
-            this.y = this.maxY;
-            if(this.state == Character_Zero_Constants.en_el_aire) {
+            if(this.state == Character_Zero_Constants.en_el_aire) {// el pj esta cayendo, choca con el suelo, pasa a idle anim.
                 this.idle();
             }
-        }else{
+        }else{ // el pj no ha chocado con una superficie, entonces esta cayendo
             this.state = Character_Zero_Constants.en_el_aire;
         }
 
-        if (this.x < this.minX) {
-            this.x = this.minX;
-        }
-        if (this.x > this.maxX) {
-            this.x = this.maxX;
-        }
-
-        if(this.speed[0] < 0){
-            direccion = false;
-            if(this.state == Character_Zero_Constants.quieto_en_el_suelo){
+        //verifica en que direccion me muevo
+        if(this.speed[0] < 0){//velocidad a la izq
+            direccion = false; //seteamos la direccion
+            if(this.state == Character_Zero_Constants.quieto_en_el_suelo){//esta en en suelo y mov a la izq, entonces esta caminando
                 this.move(false);
             }
         }else if (this.speed[0] > 0){
             direccion = true;
-            if(this.state == Character_Zero_Constants.quieto_en_el_suelo){
+            if(this.state == Character_Zero_Constants.quieto_en_el_suelo){//esta en en suelo y mov a la der, entonces esta caminando
                 this.move(true);
             }
         }
 
-
+        //verifica si el pj dejo de moverce horizontalmente
         if(this.old_movementCounter == this.new_movementCounter && (this.state == Character_Zero_Constants.moviendote_a_la_derecha || this.state == Character_Zero_Constants.moviendote_a_la_izquierda) ){
-            Log.i("comprobando movimiento","dejo de moverse");
+            //Log.i("comprobando movimiento","dejo de moverse");
             this.movement_status = false;
             idle();
         }
         this.old_movementCounter = this.new_movementCounter;
 
+    }
 
+    private void updateFrame(){
 
         //definimos que frame vamos a dibujar en draw()
         current_animation_frame = this.getCurrentMoveBitmap();
 
-        if(this.state == Character_Zero_Constants.en_el_aire) {
-            this.width = zero_constants.idle_animation_izq[0].getWidth();
-            this.height = zero_constants.idle_animation_izq[0].getHeight();
+    }
+
+    private void updatePosition(){
+
+        //actualizamos width y height del pj
+        if(this.state == Character_Zero_Constants.en_el_aire) {//si esta en el aire usamos el tamaño por defecto
+            this.width = zero_constants.idle_animation_der[0].getWidth();
+            this.height = zero_constants.idle_animation_der[0].getHeight();
         }else {
-            if(this.state == Character_Zero_Constants.durante_ataque_1){
+            if(this.state == Character_Zero_Constants.durante_ataque_1 && this.animation_status == 0){ //durante los ataques usamos los width y height del pj dentro de cada frame
                 this.width = (int) (Character_Zero_Constants.slash_A_zero[animation_frame_index][2] * this.zero_constants.adapter);
                 this.height = (int) (Character_Zero_Constants.slash_A_zero[animation_frame_index][3] * this.zero_constants.adapter);
-            }else if(this.state == Character_Zero_Constants.durante_ataque_2){
+            }else if(this.state == Character_Zero_Constants.durante_ataque_2 && this.animation_status == 0){
                 this.width = (int) (Character_Zero_Constants.slash_B_zero[animation_frame_index][2] * this.zero_constants.adapter);
                 this.height = (int) (Character_Zero_Constants.slash_B_zero[animation_frame_index][3] * this.zero_constants.adapter);
-            }else if(this.state == Character_Zero_Constants.durante_ataque_3){
+            }else if(this.state == Character_Zero_Constants.durante_ataque_3 && this.animation_status == 0){
                 this.width = (int) (Character_Zero_Constants.slash_C_zero[animation_frame_index][2] * this.zero_constants.adapter);
                 this.height = (int) (Character_Zero_Constants.slash_C_zero[animation_frame_index][3] * this.zero_constants.adapter);
             }else {
@@ -174,21 +159,96 @@ public class Character_Zero {
             }
         }
 
-        //adding top, left, bottom and right to the rect object
+        //nuevos maxX y maxY
+        this.maxX = this.screenX - this.width;
+        this.maxY = this.screenY-500 - this.height;
+
+        //actualizamos la velocidad
+        this.speed[1] += gravity;
+        //actualizamos las posiciones
+        this.x += this.speed[0];
+        this.y += this.speed[1];
+
+        //vemos que no se pasen de los limites
+        if (this.x <= this.minX) {
+            this.x = this.minX;
+        }
+        if (this.x >= this.maxX) {
+            this.x = this.maxX;
+        }
+        if (this.y <= this.minY){
+            this.y = this.minY;
+        }
+        if (this.y >= this.maxY) {
+            this.y = this.maxY;
+        }
+
+        //actualizamos el hitbox del pj
         this.detectCollision.left = this.x;
         this.detectCollision.top = this.y;
-        /*detectCollision.right = x + bitmap.getWidth(); //Antes de la animacion
-        detectCollision.bottom = y + bitmap.getHeight();*/
         this.detectCollision.right = this.x + this.width;
         this.detectCollision.bottom = this.y + this.height;
 
+        this.zeroPositions = this.GetZeroPosition();
+        Log.i("zeroPositions",this.zeroPositions);
+    }
 
+    private String GetZeroPosition(){
+        this.zero_x = this.x;
+        this.zero_y = this.y;
+        switch(this.state){
+            case Character_Zero_Constants.durante_ataque_1:
+                if(!this.direccion) {
+                    if (animation_status == 0) {
+                        this.zero_x = (int) (this.x - this.zero_constants.adapter * (Character_Zero_Constants.slash_A[animation_frame_index][2] - ( Character_Zero_Constants.slash_A_zero[animation_frame_index][2] + Character_Zero_Constants.slash_A_zero[animation_frame_index][0])));
+                        this.zero_y = (int) (this.y - this.zero_constants.adapter * Character_Zero_Constants.slash_A_zero[animation_frame_index][1]);
+                        return "zero_x = "+this.zero_x+" zero_y = "+this.zero_y;
+                    }
+                }else{
+                    if (animation_status == 0) {
+                        this.zero_x = (int) (this.x - this.zero_constants.adapter * Character_Zero_Constants.slash_A_zero[animation_frame_index][0]);
+                        this.zero_y = (int) (this.y - this.zero_constants.adapter * Character_Zero_Constants.slash_A_zero[animation_frame_index][1]);
+                        return "zero_x = "+this.zero_x+" zero_y = "+this.zero_y;
+                    }
+                }
 
-        //para hacer que una animacion dure un segundo a 60fps con n° frames por animacion al indicador frame_index
-        // se le suma 1 cada vez que (fps/n°deFrames)%counter == 0, counter indica el numero de frames que han transcurrido
-        //definimos si hay que cambiar animaciones de inicio a loop o a end
+            case Character_Zero_Constants.durante_ataque_2:
+                if(!this.direccion) {
+                    if (animation_status == 0) {
+                        this.zero_x = (int) (this.x - this.zero_constants.adapter *  (Character_Zero_Constants.slash_B[animation_frame_index][2] - ( Character_Zero_Constants.slash_B_zero[animation_frame_index][2] + Character_Zero_Constants.slash_B_zero[animation_frame_index][0])));
+                        this.zero_y = (int) (this.y - this.zero_constants.adapter * Character_Zero_Constants.slash_B_zero[animation_frame_index][1]);
+                        return "zero_x = "+this.zero_x+" zero_y = "+this.zero_y;
+                    }
+                }else{
+                    if (animation_status == 0) {
+                        this.zero_x = (int) (this.x - this.zero_constants.adapter * Character_Zero_Constants.slash_B_zero[animation_frame_index][0]);
+                        this.zero_y = (int) (this.y - this.zero_constants.adapter * Character_Zero_Constants.slash_B_zero[animation_frame_index][1]);
+                        return "zero_x = "+this.zero_x+" zero_y = "+this.zero_y;
+                    }
+                }
+
+            case Character_Zero_Constants.durante_ataque_3:
+                if(!this.direccion) {
+                    if (animation_status == 0) {
+                        this.zero_x = (int) (this.x - this.zero_constants.adapter * (Character_Zero_Constants.slash_C[animation_frame_index][2] - ( Character_Zero_Constants.slash_C_zero[animation_frame_index][2] + Character_Zero_Constants.slash_C_zero[animation_frame_index][0])));
+                        this.zero_y = (int) (this.y - this.zero_constants.adapter * Character_Zero_Constants.slash_C_zero[animation_frame_index][1]);
+                        return "zero_x = "+this.zero_x+" zero_y = "+this.zero_y;
+                    }
+                }else{
+                    if (animation_status == 0) {
+                        this.zero_x = (int) (this.x - this.zero_constants.adapter * Character_Zero_Constants.slash_C_zero[animation_frame_index][0]);
+                        this.zero_y = (int) (this.y - this.zero_constants.adapter * Character_Zero_Constants.slash_C_zero[animation_frame_index][1]);
+                        return "zero_x = "+this.zero_x+" zero_y = "+this.zero_y;
+                    }
+                }
+                default:
+                return "no estas en estado de ataque";
+        }
+
+    }
+
+    private void updateAnimation(){
         this.animation_progress();
-
     }
 
     public void draw(Canvas canvas, Paint paint){
@@ -213,7 +273,8 @@ public class Character_Zero {
         canvas.drawRect(x, y, x+width, y+height, zero_frame);
         canvas.drawLine(0,screenY-500,3000,screenY-500,line);
 
-        canvas.drawBitmap(current_animation_frame, x, y, paint);
+        Log.i("Draw coord","x = "+x+" y = "+y+" width = "+width+" height = "+height+" test 500 = "+(y+height));
+        canvas.drawBitmap(current_animation_frame, zero_x, zero_y, paint);
 
         /*if(this.state == Character_Zero_Constants.durante_ataque_1 ||
                 this.state == Character_Zero_Constants.durante_ataque_2 ||
@@ -445,7 +506,7 @@ public class Character_Zero {
                 if(!this.movement_status) {
                     this.animation_frame_index = 0;
                     this.animation_duration = 2;
-                    Log.i("comprobando movimiento","reiniciando animation status");
+                    //Log.i("comprobando movimiento","reiniciando animation status");
                     this.animation_status = 0;// reiniciamos el status de la animacion para que recorra el estado start y loop
                 }
             } else {
@@ -454,7 +515,7 @@ public class Character_Zero {
                 if(!this.movement_status) {
                     this.animation_frame_index = 0;
                     this.animation_duration = 2;
-                    Log.i("comprobando movimiento","reiniciando animation status");
+                    //Log.i("comprobando movimiento","reiniciando animation status");
                     this.animation_status = 0;// reiniciamos el status de la animacion para que recorra el estado start y loop
                 }
             }
@@ -499,7 +560,7 @@ public class Character_Zero {
             this.setSpeed(0,0);
 
             this.animation_frame_index = 0;
-            this.animation_duration = 120;
+            this.animation_duration = 15;
             this.animation_status = 0;// reiniciamos el status de la animacion para que recorra el estado start y loop
         }
         else if((this.state == Character_Zero_Constants.durante_ataque_1 &&
@@ -511,7 +572,7 @@ public class Character_Zero {
             this.setSpeed(0,0);
 
             this.animation_frame_index = 0;
-            this.animation_duration = 120;
+            this.animation_duration = 15;
             this.animation_status = 0;// reiniciamos el status de la animacion para que recorra el estado start y loop
         }
         else if((this.state == Character_Zero_Constants.durante_ataque_2 &&
@@ -523,7 +584,7 @@ public class Character_Zero {
             this.setSpeed(0,0);
 
             this.animation_frame_index = 0;
-            this.animation_duration = 360;
+            this.animation_duration = 20;
             this.animation_status = 0;// reiniciamos el status de la animacion para que recorra el estado start y loop
         }
     }
@@ -533,7 +594,7 @@ public class Character_Zero {
     }
 
 
-    public void animation_progress(){
+    private void animation_progress(){
 
         //para hacer que una animacion dure un segundo a 60fps con n° frames por animacion al indicador frame_index
         // se le suma 1 cada vez que counter%(fps/n°deFrames) == 0, counter indica el numero de frames que han transcurrido
@@ -547,7 +608,7 @@ public class Character_Zero {
         }
         int progress = this.counter%(_progress);
         if ( progress == 0) {
-            Log.i("msj info","state = "+ this.zero_constants.printState(this.state) + " anim_dur = "+ this.animation_duration + " cur_anim_len = "+ this.current_animation.length+ " this.animation_frame_index = " + this.animation_frame_index+ " this.animation_status = " + this.animation_status);
+            //Log.i("msj info","state = "+ this.zero_constants.printState(this.state) + " anim_dur = "+ this.animation_duration + " cur_anim_len = "+ this.current_animation.length+ " this.animation_frame_index = " + this.animation_frame_index+ " this.animation_status = " + this.animation_status);
             this.animation_frame_index++;
             this.counter = 0;
             //Log.i("msj info","this.animation_frame_index = " + this.animation_frame_index + " this.current_animation.length = " + this.current_animation.length);
@@ -578,7 +639,7 @@ public class Character_Zero {
                         if(animation_status == 0){
                             this.animation_status = 1;
                             this.animation_duration = 10;
-                            Log.i("msj info","corriendo cambia de animacion");
+                            //Log.i("msj info","corriendo cambia de animacion");
 
                         }
                         break;
